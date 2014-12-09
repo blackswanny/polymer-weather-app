@@ -1,7 +1,7 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/core-ajax/core-ajax.html">
 
-<polymer-element name="weather-card" attributes="mode city">
+<polymer-element name="weather-card" attributes="mode city weatherdata">
     <template>
         <template if="{{mode == 'day'}}" bind>
             <core-ajax id="ajax"
@@ -21,6 +21,20 @@
                     </div>
                     <div class="celcius">&deg;C</div>
 
+                </div>
+            </div>
+        </template>
+        <template if="{{mode == 'dayData'}}" bind>
+            <div id="card" class="hide {{mode}}">
+                <div class="large">{{city}}</div>
+                <div class="medium">{{formatDate(weather.dt, 'dddd Do HH:mm')}}</div>
+                <div class="medium">{{weather.weather[0].description}}</div>
+                <div>
+                    <img style="width:64px; height: 64px; float:left;" src="http://openweathermap.org/img/w/{{weather.weather[0].icon}}.png">
+                    <div class="degrees">
+                        <span>{{formatTemperature(weather.temp.day)}}</span>
+                    </div>
+                    <div class="celcius">&deg;C</div>
                 </div>
             </div>
         </template>
@@ -65,6 +79,9 @@
             #card.hide {
                 display: none;
             }
+            #card.dayData div {
+                float: left;
+            }
         </style>
 
     </template>
@@ -72,6 +89,7 @@
     <script>
         Polymer({
             mode: "none",
+            weatherdata: {},
             city: "Kyiv",
             weather: {},
             ready: function() {
@@ -80,7 +98,14 @@
                     case 'day':
                         this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q=" + this.city + "&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
                         break;
+                    case 'dayData':
+                        this.weather = JSON.parse(this.weatherdata);
+                        console.log('data', JSON.parse(this.weatherdata));
+                        this.$.card.classList.remove('hide');
+                        break;
                 }
+
+
 
             },
             weatherLoaded: function() {
@@ -93,7 +118,7 @@
                     return Math.round(temp);
             },
             formatDate: function(timestamp, format) {
-                return moment().format(format);
+                return moment(timestamp * 1000).format(format);
             }
         });
     </script>

@@ -9,11 +9,14 @@
                    url=""
                    on-core-response="{{weatherListLoaded}}"
                    handleAs="json"></core-ajax>
-        <core-list id="list" data="{{data}}" height="400">
+        <!--<core-list id="list" data="{{data}}" height="400">
             <template>
-                <weather-card mode="day" data="{{model}}" city="Donetsk,ua"></weather-card>
+                <weather-card mode="day" weatherdata="{{stringifyData(model)}}" city="Donetsk,ua"></weather-card>
             </template>
-        </core-list>
+        </core-list>-->
+        <template repeat="{{data as model}}">
+            <weather-card mode="dayData" weatherdata="{{stringifyData(model)}}" city="Donetsk,ua"></weather-card>
+        </template>
         <style>
             #list {
                 height: 1600px;
@@ -45,7 +48,11 @@
                 }
             },
             weatherListLoaded: function () {
-                this.data = this.$.ajax.response.list.slice();
+                this.data = this.$.ajax.response.list.slice(0);
+                console.log(this.data);
+            },
+            stringifyData: function(data) {
+                return JSON.stringify(data);
             }
         });
     </script>
