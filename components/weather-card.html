@@ -1,38 +1,91 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="/bower_components/paper-input/paper-input.html">
-<link rel="import" href="/bower_components/paper-button/paper-button.html">
 
-<polymer-element name="weather-card">
+<polymer-element name="weather-card" attributes="mode city">
     <template>
         <core-ajax id="ajax"
                    auto
                    url=""
                    on-core-response="{{weatherLoaded}}"
                    handleAs="json"></core-ajax>
-        <p>{{weather.name}}</p>
-        <p>{{formatTemperature(weather.main.temp)}}&deg;C</p>
-        <paper-input id="city" value="Kiev"></paper-input>
-        <paper-button raised id="changeCity" on-click="{{changeCity}}">Show weather</paper-button>
+        <div id="card" class="hide {{mode}}">
+            <div class="large">{{weather.name + ', ' + weather.sys.country}}</div>
+            <div class="medium">{{formatDate(weather.dt, 'dddd Do HH:mm')}}</div>
+            <div class="medium">{{weather.weather[0].description}}</div>
+            <div>
+                <img style="width:64px; height: 64px; float:left;" src="http://openweathermap.org/img/w/{{weather.weather[0].icon}}.png">
+                <div class="degrees">
+                    <span>{{formatTemperature(weather.main.temp)}}</span>
+                </div>
+                <div class="celcius">&deg;C</div>
+
+            </div>
+        </div>
+
+        <style>
+            #card {
+                margin: 15px;
+                background-color: #fff;
+                box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+                border-radius: 2px;
+                padding: 8px;
+                overflow: hidden;
+            }
+
+            #card>div {
+                padding: 2px;
+            }
+            .large {
+                font-size: x-large;
+                color: #878787;
+            }
+            .medium {
+                font-size: medium;
+                color: #878787;
+            }
+            .degrees {
+                float:left;
+            }
+            .degrees>span {
+                font-size: 64px;
+            }
+            .celcius {
+                float:left;
+                margin-top: 8px;
+                color: #878787;
+            }
+            #card.hide {
+                display: none;
+            }
+        </style>
+
     </template>
+
     <script>
         Polymer({
+            mode: "day",
+            city: "Kyiv",
             weather: {},
             ready: function() {
-                this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q=Kyiv,ua&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
+
+                switch (this.mode) {
+                    case 'day':
+                        this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q=" + this.city + "&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
+                        break;
+                }
+
             },
             weatherLoaded: function() {
                 this.weather = this.$.ajax.response;
+                this.$.card.classList.remove('hide');
                 console.log(this.weather);
             },
             formatTemperature: function(temp) {
                 if (typeof temp !== 'undefined')
-                    return temp.toFixed(2);
+                    return Math.round(temp);
             },
-            changeCity: function(e) {
-                if (this.$.city.value.length > 0) {
-                    this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q="+this.$.city.value+"&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
-                }
+            formatDate: function(timestamp, format) {
+                return moment().format(format);
             }
         });
     </script>
