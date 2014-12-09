@@ -1,0 +1,52 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="/bower_components/core-list/core-list.html">
+
+<polymer-element name="weather-list" attributes="mode place">
+    <template>
+        <core-ajax id="ajax"
+                   auto
+                   url=""
+                   on-core-response="{{weatherListLoaded}}"
+                   handleAs="json"></core-ajax>
+        <core-list id="list" data="{{data}}" height="400">
+            <template>
+                <weather-card mode="day" data="{{model}}" city="Donetsk,ua"></weather-card>
+            </template>
+        </core-list>
+        <style>
+            #list {
+                height: 1600px;
+                width: 600px;
+            }
+        </style>
+    </template>
+
+    <script>
+        Polymer({
+            mode: 'list',
+            place: 'Kyiv',
+            APPID: '50e418e0f0c0e501713115a1df9ca42e',
+            ready: function () {
+                this.data = [];
+                switch (this.mode) {
+                    case 'list':
+                        this.$.ajax.url = 'http://api.openweathermap.org/data/2.5/forecast/daily?q=' + this.place +
+                                '&mode=json&units=metric&cnt=10&APPID=' + this.APPID;
+                        break;
+                    case 'grid':
+                        var start = new Date().valueOf();
+                        var end = new Date();
+                        end.setDate(30);
+                        end = end.valueOf();
+                        this.$.ajax.url = 'http://api.openweathermap.org/data/2.5/history/city?q=' + this.place +
+                                '&mode=json&units=metric&type=day&start=' + start + '&end=' + end + '&APPID=' + this.APPID;
+                        break;
+                }
+            },
+            weatherListLoaded: function () {
+                this.data = this.$.ajax.response.list.slice();
+            }
+        });
+    </script>
+</polymer-element>
