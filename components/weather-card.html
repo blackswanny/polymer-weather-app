@@ -3,24 +3,32 @@
 
 <polymer-element name="weather-card" attributes="mode city">
     <template>
-        <core-ajax id="ajax"
+        <template if="{{mode == 'day'}}" bind>
+            <core-ajax id="ajax"
                    auto
                    url=""
                    on-core-response="{{weatherLoaded}}"
                    handleAs="json"></core-ajax>
-        <div id="card" class="hide {{mode}}">
-            <div class="large">{{weather.name + ', ' + weather.sys.country}}</div>
-            <div class="medium">{{formatDate(weather.dt, 'dddd Do HH:mm')}}</div>
-            <div class="medium">{{weather.weather[0].description}}</div>
-            <div>
-                <img style="width:64px; height: 64px; float:left;" src="http://openweathermap.org/img/w/{{weather.weather[0].icon}}.png">
-                <div class="degrees">
-                    <span>{{formatTemperature(weather.main.temp)}}</span>
-                </div>
-                <div class="celcius">&deg;C</div>
 
+            <div id="card" class="hide {{mode}}">
+                <div class="large">{{weather.name + ', ' + weather.sys.country}}</div>
+                <div class="medium">{{formatDate(weather.dt, 'dddd Do HH:mm')}}</div>
+                <div class="medium">{{weather.weather[0].description}}</div>
+                <div>
+                    <img style="width:64px; height: 64px; float:left;" src="http://openweathermap.org/img/w/{{weather.weather[0].icon}}.png">
+                    <div class="degrees">
+                        <span>{{formatTemperature(weather.main.temp)}}</span>
+                    </div>
+                    <div class="celcius">&deg;C</div>
+
+                </div>
             </div>
-        </div>
+        </template>
+        <template if="{{mode=='none'}}" bind>
+            <div id="card" class="{{mode}}">
+                <div class="large">Mode not provided</div>
+            </div>
+        </template>
 
         <style>
             #card {
@@ -63,7 +71,7 @@
 
     <script>
         Polymer({
-            mode: "day",
+            mode: "none",
             city: "Kyiv",
             weather: {},
             ready: function() {
