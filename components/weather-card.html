@@ -18,10 +18,6 @@
     <script>
         Polymer({
             weather: {},
-            created: function() {
-                this.weather = {};
-                console.log('ready');
-            },
             ready: function() {
                 this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q=Kyiv,ua&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
             },
@@ -34,7 +30,7 @@
                     return temp.toFixed(2);
             },
             changeCity: function(e) {
-                if (this.$.city.value.length > 3) {
+                if (this.$.city.value.length > 0) {
                     this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q="+this.$.city.value+"&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
                 }
             }
