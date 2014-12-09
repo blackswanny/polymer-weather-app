@@ -1,0 +1,43 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+
+<polymer-element name="weather-card">
+    <template>
+        <core-ajax id="ajax"
+                   auto
+                   url=""
+                   on-core-response="{{weatherLoaded}}"
+                   handleAs="json"></core-ajax>
+        <p>{{weather.name}}</p>
+        <p>{{formatTemperature(weather.main.temp)}}&deg;C</p>
+        <paper-input id="city" value="Kiev"></paper-input>
+        <paper-button raised id="changeCity" on-click="{{changeCity}}">Show weather</paper-button>
+    </template>
+    <script>
+        Polymer({
+            weather: {},
+            created: function() {
+                this.weather = {};
+                console.log('ready');
+            },
+            ready: function() {
+                this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q=Kyiv,ua&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
+            },
+            weatherLoaded: function() {
+                this.weather = this.$.ajax.response;
+                console.log(this.weather);
+            },
+            formatTemperature: function(temp) {
+                if (typeof temp !== 'undefined')
+                    return temp.toFixed(2);
+            },
+            changeCity: function(e) {
+                if (this.$.city.value.length > 3) {
+                    this.$.ajax.url = "http://api.openweathermap.org/data/2.5/weather?q="+this.$.city.value+"&units=metric&APPID=50e418e0f0c0e501713115a1df9ca42e";
+                }
+            }
+        });
+    </script>
+</polymer-element>
