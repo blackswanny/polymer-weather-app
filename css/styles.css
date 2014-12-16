@@ -2,9 +2,3 @@ body {
     font-family: Roboto, Geneva, Arial, Helvetica, sans-serif;
     background-color: #E3E3E3;
 }
-
-weather-card {
-    position: relative;
-    float:left;
-    /*width:50%;*/
-}
